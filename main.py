@@ -35,95 +35,64 @@ def main():
 	line_coords = []
 	line_distances = []
 
-	# if (graph):
-	# 	# configuring graph for plotting
-	# 	plt.figure(figsize=(15,8))
-	# 	plt.axis([0, video.n_frames, 0, height])
-	# 	plt.grid(True)
-	#
-	# if (save_data):
-	# 	file = open("data.csv", 'w', newline="")
-	# 	writer = csv.writer(file)
+	if (graph):
+		# configuring graph for plotting
+		plt.figure(figsize=(15,8))
+		plt.axis([0, video.n_frames, 0, height])
+		plt.grid(True)
 
-	#for frame_count in range(0, video.n_frames-1):
-	max1=0
-	max2=0
-
-	count1=1
-	count2=1
+	if (save_data):
+		file = open("data.csv", 'w', newline="")
+		writer = csv.writer(file)
 
 	for frame_count in range(0, video.n_frames-1):
 		# Get next frame in the video
 		image = video.get_frame()
 		image = Image.resize(image, factor)
-		# print(image.shape)
-		# print(image[0][0])
-		# x = (float(image[0][0][0])/255+float(image[0][0][1])/255+float(image[0][0][2])/255)/3
-		# print(x)
-
-		# #code needed for column algorithm
-		# signal_list = []
-		#
-		# Image.column_signal(image, signal_list)
-		# temp = np.copy(signal_list)
-		# Image.draw_line(image, signal_list, 1)
-		# square_wave = Image.square_wave(signal_list[0], 30)
-		# for column in range(0, len(signal_list)):
-		# 	signal_list[column] = Image.convolve(signal_list[column], square_wave)
-		# Image.draw_line(image, signal_list, 0)
-		#
-		# #cv2.imshow('image', image)
-		# #cv2.waitKey(0)
-		# #new_signal = Image.convolve(signal_list[100])
-		#
-		# # print(len(new_signal))
-		# # print(new_signal)
-		# # #new_signal = np.array(new_signal)
-		# # print(np.amax(new_signal))
-		# # result = int(np.where(new_signal == np.amax(new_signal)))
-		# # print(int(result[0]))
-		# # print(len(new_signal))
-		#
-		# # for i in range(0, image.shape[1]):
-		# # 	signal = image[:, i]
-		# # 	print(signal)
-		# # 	csignal = Image.convolve(signal)
-		# # print(csignal)
-		# #end code needed
-
-		#code needed for row algorithm
-
-		# signal = []
-		#
-		# Image.row_sum(image, signal)
-		# temp = np.copy(signal)
-		# if frame_count== 0:
-		# 	max1 = Image.horiz_line(image, temp, 1, frame_count)
-		# else:
-		# 	max1 = Image.horiz_line(image, temp, 1, frame_count, 0, max1)
-		# square_wave = Image.square_wave(signal, 30)
-		# if frame_count == 0:
-		# 	max2 = Image.horiz_line(image, signal, 0, frame_count, square_wave)
-		# else:
-		# 	max2 = Image.horiz_line(image, signal, 0, frame_count, square_wave, max2)
-		#
-		signal = []
-
-		Image.row_sum(image, signal)
-		temp = np.copy(signal)
-		max_list_conv = []
-		max_list = []
-
-		count1, max_list = Image.horiz_line(image, temp, max_list, 1, count1)
-		square_wave = Image.square_wave(signal, 30)
-		count2, max_list_conv = Image.horiz_line(image, signal, max_list_conv, 0, count2, square_wave)
-		#end code needed for row algorithm
 
 		# Display Original Frame from the video
-		#if (display):
-		cv2.imshow("1. Original Video", image)
+		if (display):
+			cv2.imshow("1. Original Video", image)
 
+		alg1_image = np.copy(image)
+		signal_list = []
+		Image.column_signal(alg1_image, signal_list)
+		temp = np.copy(signal_list)
+		Image.draw_line(alg1_image, signal_list, 1)
+		square_wave = Image.square_wave(signal_list[0], 30)
+		for column in range(0, len(signal_list)):
+			signal_list[column] = Image.convolve(signal_list[column], square_wave)
+		Image.draw_line(alg1_image, signal_list, 0)
 
+		# Display Frame from Column Signal Algorithm
+		if (display):
+			cv2.imshow("2. Column Signal Algorithm", alg1_image)
+
+		alg2_image = np.copy(image)
+		signal = []
+		Image.row_sum(alg2_image, signal)
+		Image.horiz_line(alg2_image, signal, 1)
+		#square_wave = Image.square_wave(signal, alg2_image.shape[1])
+		#Image.horiz_line(alg2_image, signal, 0, square_wave)
+		# Display Frame from Row Signal Algorithm
+		if (display):
+			cv2.imshow("3. Row Sum Algorithm", alg2_image)
+
+		# # Display the frame after edge detection has been applied to it
+		# edge_image = Image.detect_edges(image)
+		# if (display):
+		# 	cv2.imshow("2. Edge-Detected Video", edge_image)
+        #
+		# # Display the frame with all lines detected
+		# line_image = Image.detect_lines(np.copy(image), np.copy(edge_image))
+		# if (display):
+		# 	cv2.imshow("3. Line-Detected Image", line_image)
+        #
+		# # Display the frame with filtered lines detected
+		# line_list, line_coords = Image.detect_lane_lines(image, edge_image, line_list, line_coords, frame_count, 5)
+		# if (display):
+		# 	cv2.imshow("4. Final Image", image)
+        #
 		# # Calculating the distance from the car to the lane (in pixels)
 		# for line_coord in line_coords:
 		# 	line_distances.append(line_coord[1])	# y1
@@ -140,8 +109,8 @@ def main():
 		# 		plt.pause(0.05)
 		# except ValueError:
 		# 	print("No Lines Found!")
-		#
-		# time.sleep(0)
+
+		time.sleep(0)
 
 		# To end the process, click on any of the display windows and press "q" on the keyboard.
 		if cv2.waitKey(25) & 0xFF == ord('q'):
@@ -151,10 +120,11 @@ def main():
 
 	if (save_data):
 		print("Finished Writing!\n")
-		#file.close()
+		file.close()
 
 	if (graph):
 		plt.show()
 
 if __name__ == '__main__':
 	main()
+
