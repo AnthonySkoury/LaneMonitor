@@ -17,8 +17,8 @@ def column_signal(src_image, signal_list):
 	for column in range(0, src_image.shape[1]):
 		signal = []
 		for row in range(0, src_image.shape[0]):
-			#channel_sum = (float(src_image[row][column][0])/255+float(src_image[row][column][1])/255+float(src_image[row][column][2])/255)/3
-			channel_sum = (float(src_image[row][column][0])*0.0722+float(src_image[row][column][1])*0.7152+float(src_image[row][column][2])*0.2126)/3
+			channel_sum = (float(src_image[row][column][0])/255+float(src_image[row][column][1])/255+float(src_image[row][column][2])/255)
+			#channel_sum = (float(src_image[row][column][0])*0.0722+float(src_image[row][column][1])*0.7152+float(src_image[row][column][2])*0.2126)
 			signal.append(channel_sum)
 		signal_list.append(signal)
 	return
@@ -57,20 +57,18 @@ def draw_line(src_image, signal_list, flag):
 
 def square_wave(signal, lane_width):
 	square_signal = []
-	count=0
-	count2=0
+
 	for i in range(0, len(signal)):
-		if count<lane_width:
+		if i<lane_width:
 			square_signal.append(0)
-			count+=1
+		elif i<lane_width+(lane_width)/2:
+			square_signal.append(-15)
+		elif i<lane_width+(lane_width)*(3/2):
+			square_signal.append(15)
+		elif i<lane_width+(lane_width)*2:
+			square_signal.append(-15)
 		else:
-			if count2<lane_width:
-				square_signal.append(1)
-				count2+=1
-			else:
-				count=0
-				count2=0
-				square_signal.append(1)
+			square_signal.append(0)
 	return square_signal
 
 
