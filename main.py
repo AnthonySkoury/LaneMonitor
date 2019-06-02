@@ -49,6 +49,8 @@ def main():
 		# Get next frame in the video
 		image = video.get_frame()
 		image = Image.resize(image, factor)
+		#print(image.shape[0])
+		#print(image.shape[1])
 
 		# Display Original Frame from the video
 		if (display):

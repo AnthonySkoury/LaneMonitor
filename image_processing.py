@@ -16,7 +16,7 @@ def column_signal(src_image, signal_list):
 	#first loop through columns
 	for column in range(0, src_image.shape[1]):
 		signal = []
-		for row in range(0, src_image.shape[0]):
+		for row in range(0, src_image.shape[0]-40):
 			channel_sum = (float(src_image[row][column][0])/255+float(src_image[row][column][1])/255+float(src_image[row][column][2])/255)
 			#channel_sum = (float(src_image[row][column][0])*0.0722+float(src_image[row][column][1])*0.7152+float(src_image[row][column][2])*0.2126)
 			signal.append(channel_sum)
@@ -29,7 +29,7 @@ def convolve(signal, square_signal):
 	sample_rate = 100
 	num_samples = len(signal)
 	#wave = np.fromfunction(lambda i: (2 * sample_rate < i) & (i < 3 * sample_rate), (num_samples,)).astype(np.float)
-	return np.convolve(signal, square_signal, mode="same")
+	return np.convolve(signal, square_signal, mode="valid")
 	#return np.convolve(signal, wave, mode="same")
 
 def plot_max(src_image, signal, column, flag):
@@ -59,16 +59,12 @@ def square_wave(signal, lane_width):
 	square_signal = []
 
 	for i in range(0, len(signal)):
-		if i<lane_width:
-			square_signal.append(0)
-		elif i<lane_width+(lane_width)/2:
+		if i<lane_width/2:
 			square_signal.append(-15)
-		elif i<lane_width+(lane_width)*(3/2):
+		elif i<lane_width:
 			square_signal.append(15)
-		elif i<lane_width+(lane_width)*2:
+		elif i<lane_width+(lane_width)*(1/2):
 			square_signal.append(-15)
-		else:
-			square_signal.append(0)
 	return square_signal
 
 
